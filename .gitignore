@@ -1,0 +1,8 @@
+# Ignore .vagrant
+.vagrant*
+
+# Ignore subdirectories
+*/
+
+# Ignore Files
+*.tgz
