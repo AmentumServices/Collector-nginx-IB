@@ -6,3 +6,5 @@
 
 # Ignore Files
 *.tgz
+*.zip
+*.bundle
