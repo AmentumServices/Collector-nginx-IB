@@ -13,6 +13,7 @@ pipelines:
           script:
             - echo "bundle submodule"
             - cd nginx
+            - git submodule sync
             - git bundle create ../nginx-ib.bundle
       - step:
           name: 'grab images'
@@ -24,14 +25,12 @@ pipelines:
             - echo "Setting Variables"
             - IMAGE="nginx-ib"
             - DATE=`date '+%Y%m%d-%H%M'`
-            - podman login registry1.dso.mil -u $REGISTRY_USER -p $REGISTRY_TOKEN
+            - skopeo login registry1.dso.mil -u $REGISTRY_USER -p $REGISTRY_TOKEN
             - echo "Running skopeo container"
-            - podman run -it --rm \
-                -v `pwd`:/sync:Z \
-                registry1.dso.mil/ironbank/opensource/containers/skopeo sync \
+            - skopeo sync \
                 --src-creds=$REGISTRY_USER:$REGISTRY_TOKEN \
-                --src yaml --dest dir /sync/$IMAGE.yml ./$IMAGE
+                --src yaml --dest dir $IMAGE.yml $IMAGE
             - echo "TARchiving Collected Image"
-            - tar -cvzf ../$IMAGE-$DATE.tgz ./$IMAGE
+            - tar -cvzf $IMAGE-$DATE.tgz $IMAGE
             - echo "Complete"
 
