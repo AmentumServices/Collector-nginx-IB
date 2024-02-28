@@ -3,6 +3,7 @@
 
 # Ignore subdirectories
 */
+!nginx/
 
 # Ignore Files
 *.tgz
