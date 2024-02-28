@@ -18,7 +18,7 @@ pipelines:
             - pwd            
             - ls -al
             - git bundle create ../nginx-ib_$DATE.bundle --all
-            - pipe: atlassian/bitbucket-upload-file
+            - pipe: atlassian/bitbucket-upload-file:0.7.1
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
@@ -43,7 +43,7 @@ pipelines:
                 --src yaml --dest dir $IMAGE.yml $IMAGE
             - echo "TARchiving Collected Image"
             - tar -cvzf $IMAGE-$DATE.tgz $IMAGE
-            - pipe: atlassian/bitbucket-upload-file
+            - pipe: atlassian/bitbucket-upload-file:0.7.1
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
