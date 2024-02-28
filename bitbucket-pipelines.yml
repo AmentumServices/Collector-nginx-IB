@@ -15,8 +15,10 @@ pipelines:
             - DATE=`date '+%Y%m%d-%H%M'`
             - git submodule update --init --recursive
             - cd nginx
-            - git bundle create ../nginx-ib_$DATE.bundle
-            - pipe: atlassian/bitbucket-upload-file:0.1.2
+            - pwd            
+            - ls -al
+            - git bundle create ../nginx-ib_$DATE.bundle --all
+            - pipe: atlassian/bitbucket-upload-file
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
@@ -41,7 +43,7 @@ pipelines:
                 --src yaml --dest dir $IMAGE.yml $IMAGE
             - echo "TARchiving Collected Image"
             - tar -cvzf $IMAGE-$DATE.tgz $IMAGE
-            - pipe: atlassian/bitbucket-upload-file:0.1.2
+            - pipe: atlassian/bitbucket-upload-file
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
