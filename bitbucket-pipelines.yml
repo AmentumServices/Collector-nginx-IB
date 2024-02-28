@@ -9,16 +9,19 @@ pipelines:
   default:
     - parallel:
       - step:
-          name: 'Bundle submodle'
+          name: 'Bundle Repo1 code base for '
           script:
-            - echo "bundle submodule"
             - DATE=`date '+%Y%m%d-%H%M'`
             - git submodule update --init --recursive
             - cd nginx
             - git bundle create --progress ../nginx-ib_$DATE.bundle --all
             - cd ..
             - pwd            
-            - ls -al
+            - ls -alh
+            - |
+              curl -X POST \
+                "https://${BITBUCKET_USERNAME}:${BITBUCKET_APP_PASSWORD}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" \
+                --form files=@"nginx-ib_$DATE.bundle"
             - pipe: atlassian/bitbucket-upload-file:0.7.1
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
@@ -45,14 +48,11 @@ pipelines:
             - echo "TARchiving Collected Image"
             - tar -cvzf $IMAGE-$DATE.tgz $IMAGE
             - pwd            
-            - ls -al
-            - pipe: atlassian/bitbucket-upload-file:0.7.1
-              variables:
-                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
-                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
-                FILENAME: "$IMAGE-$DATE.tgz"
-            - echo "Complete"
-            
+            - ls -alh
+            - |
+              curl -X POST \
+                "https://${BITBUCKET_USERNAME}:${BITBUCKET_APP_PASSWORD}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" \
+                --form files=@"nginx-ib_$DATE.bundle"
           artifacts: # defining the artifacts to be passed to each future step.
            - $IMAGE-$DATE.tgz
 
