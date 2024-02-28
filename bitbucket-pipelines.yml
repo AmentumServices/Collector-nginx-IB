@@ -12,9 +12,17 @@ pipelines:
           name: 'Bundle submodle'
           script:
             - echo "bundle submodule"
+            - DATE=`date '+%Y%m%d-%H%M'`
             - cd nginx
             - git submodule sync
-            - git bundle create ../nginx-ib.bundle
+            - git bundle create ../nginx-ib_$DATE.bundle
+            - pipe: atlassian/bitbucket-upload-file:0.1.2
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                FILENAME: "nginx-ib_$DATE.bundle"
+          artifacts: # defining the artifacts to be passed to each future step.
+          - nginx-ib_$DATE.bundle
       - step:
           name: 'grab images'
           script:
@@ -32,5 +40,13 @@ pipelines:
                 --src yaml --dest dir $IMAGE.yml $IMAGE
             - echo "TARchiving Collected Image"
             - tar -cvzf $IMAGE-$DATE.tgz $IMAGE
+            - pipe: atlassian/bitbucket-upload-file:0.1.2
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                FILENAME: "$IMAGE-$DATE.tgz"
             - echo "Complete"
+            
+          artifacts: # defining the artifacts to be passed to each future step.
+          - $IMAGE-$DATE.tgz
 
