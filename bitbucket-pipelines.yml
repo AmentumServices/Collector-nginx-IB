@@ -13,8 +13,8 @@ pipelines:
           script:
             - echo "bundle submodule"
             - DATE=`date '+%Y%m%d-%H%M'`
+            - git submodule update --init --recursive
             - cd nginx
-            - git submodule sync
             - git bundle create ../nginx-ib_$DATE.bundle
             - pipe: atlassian/bitbucket-upload-file:0.1.2
               variables:
@@ -35,7 +35,8 @@ pipelines:
             - DATE=`date '+%Y%m%d-%H%M'`
             - skopeo login registry1.dso.mil -u $REGISTRY_USER -p $REGISTRY_TOKEN
             - echo "Running skopeo container"
-            - skopeo sync \
+            - |
+              skopeo sync \
                 --src-creds=$REGISTRY_USER:$REGISTRY_TOKEN \
                 --src yaml --dest dir $IMAGE.yml $IMAGE
             - echo "TARchiving Collected Image"
