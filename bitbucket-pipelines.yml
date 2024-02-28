@@ -1,0 +1,37 @@
+# This is an example Starter pipeline configuration
+# Use a skeleton to build, test and deploy using manual and parallel steps
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+
+image: atlassian/default-image:4
+
+pipelines:
+  default:
+    - parallel:
+      - step:
+          name: 'Bundle submodle'
+          script:
+            - echo "bundle submodule"
+            - cd nginx
+            - git bundle create ../nginx-ib.bundle
+      - step:
+          name: 'grab images'
+          script:
+            - echo "Your linting goes here..."
+            # install deps
+            - apt-get update && apt-get install -y skopeo
+            - set -e
+            - echo "Setting Variables"
+            - IMAGE="nginx-ib"
+            - DATE=`date '+%Y%m%d-%H%M'`
+            - podman login registry1.dso.mil -u $REGISTRY_USER -p $REGISTRY_TOKEN
+            - echo "Running skopeo container"
+            - podman run -it --rm \
+                -v `pwd`:/sync:Z \
+                registry1.dso.mil/ironbank/opensource/containers/skopeo sync \
+                --src-creds=$REGISTRY_USER:$REGISTRY_TOKEN \
+                --src yaml --dest dir /sync/$IMAGE.yml ./$IMAGE
+            - echo "TARchiving Collected Image"
+            - tar -cvzf ../$IMAGE-$DATE.tgz ./$IMAGE
+            - echo "Complete"
+
