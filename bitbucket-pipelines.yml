@@ -11,19 +11,19 @@ pipelines:
       - step:
           name: 'Bundle code base for nginx'
           script:
-            - export BUNDLE="nginx-ib"
+            - BUNDLE="nginx-ib"
             - DATE=`date '+%Y%m%d-%H%M'`
             - git submodule update --init --recursive
             - git bundle create --progress $BUNDLE_$DATE.bundle --all       
-            - ls -alh $BUNDLE_$DATE.bundle
+            - ls -alh
             - |
               curl -X POST \
                 "https://${BITBUCKET_USERNAME}:${BITBUCKET_APP_PASSWORD}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" \
                 --form files=@"$BUNDLE_$DATE.bundle"
           artifacts: # defining the artifacts to be passed to each future step.
-            - nginx-ib_$DATE.bundle
+            - $BUNDLE_$DATE.bundle
       - step:
-          name: 'grab images'
+          name: 'Skopeo Container Images'
           script:
             - IMAGE="nginx-ib"
             - DATE=`date '+%Y%m%d-%H%M'`
