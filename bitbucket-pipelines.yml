@@ -14,7 +14,7 @@ pipelines:
             - BUNDLE="nginx-ib"
             - DATE=`date '+%Y%m%d-%H%M'`
             - git submodule update --init --recursive
-            - git bundle create --progress "$BUNDLE_$DATE.bundle" --all       
+            - git bundle create --progress ${BUNDLE}_${DATE}.bundle --all       
             - ls -alh $BUNDLE_$DATE.bundle
             - |
               curl -X POST \
