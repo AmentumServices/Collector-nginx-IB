@@ -11,10 +11,10 @@ pipelines:
       - step:
           name: 'Bundle code base for nginx'
           script:
-            - BUNDLE="nginx-ib"
+            - export BUNDLE="nginx-ib"
             - DATE=`date '+%Y%m%d-%H%M'`
             - git submodule update --init --recursive
-            - git bundle create --progress ${BUNDLE}_${DATE}.bundle --all       
+            - git bundle create --progress $BUNDLE_$DATE.bundle --all       
             - ls -alh $BUNDLE_$DATE.bundle
             - |
               curl -X POST \
