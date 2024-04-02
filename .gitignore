@@ -4,6 +4,7 @@
 # Ignore subdirectories
 */
 !nginx/
+!.github/
 
 # Ignore Files
 *.tgz
