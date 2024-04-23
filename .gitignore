@@ -2,7 +2,7 @@
 .vagrant*
 
 # Ignore subdirectories
-*/
+!.github/**
 !nginx/
 !.github/
 
