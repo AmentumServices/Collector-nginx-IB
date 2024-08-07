@@ -39,7 +39,7 @@ jobs:
 
       - name: Run Skopeo Sync
         run: |
-          skopeo --debug --insecure-policy sync --scoped -f v2s2 --remove-signatures \
+          skopeo --debug --insecure-policy sync --scoped -f v2s1 --remove-signatures \
               --src yaml --dest dir ${{ vars.COLLECTOR }}.yml ${{ vars.COLLECTOR }}
 
       - name: Directory Contents
