@@ -1,6 +1,6 @@
 registry1.dso.mil:
     images-by-tag-regex:
-        ironbank/opensource/nginx/nginx: (1.27.[0-9])|(1.27.[0-9]-distroless)|latest
+        ironbank/opensource/nginx/nginx: (^1.27.[0-9]$)|(^1.27.[0-9]-distroless$)|(^latest$)
 docker.io:
     images-by-tag-regex:
-        chainguard/nginx: latest|(1.27.[0-9])
+        chainguard/nginx: (^latest$)|(^1.27.[0-9]$)
