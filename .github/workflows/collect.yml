@@ -95,6 +95,9 @@ jobs:
       contents: write
       pull-requests: read
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
       - name: Install mkisofs
         run: |
           sudo apt-get update -y
@@ -108,18 +111,30 @@ jobs:
       - name: Show Artifacts
         run: ls -alh ${{ vars.COLLECTOR }}-*.*
 
+      - name: Generate Artifact Hash File
+        run: |
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}* >>\
+            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
+          cat ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
+
+      - name: Upload Artifact Hash File
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
+
       - name: Make ISO
         run: |
           mkisofs -J -R -v -T -l \
             -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -A '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -o ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso \
-            ${{ vars.COLLECTOR }}-*.*
+            ${{ vars.COLLECTOR }}-*.* *.md
 
       - name: Implant MD5 sum into iso
         run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
 
-      - name: Generate Hash
+      - name: Generate ISO Hash
         run: |
           sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso >>\
             ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
@@ -133,8 +148,9 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
           path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          if-no-files-found: error
 
-      - name: Upload ISO SHA
+      - name: Upload ISO Hash
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
@@ -180,9 +196,7 @@ jobs:
           tag_name: ${{ needs.Date.outputs.Date }}
           make_latest: true
           files: |
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*
+            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}*.*
 
   Sharepoint:
     runs-on: ubuntu-latest
